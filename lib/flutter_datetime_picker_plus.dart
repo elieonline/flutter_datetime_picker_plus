@@ -140,7 +140,7 @@ class DatePicker {
       context,
       _DatePickerRoute(
         showTitleActions: showTitleActions,
-        isDialog: isDialog.
+        isDialog: isDialog,
         onChanged: onChanged,
         onConfirm: onConfirm,
         onCancel: onCancel,
