@@ -125,6 +125,7 @@ class DatePicker {
   ///
   static Future<DateTime?> showDateTimePicker(
     BuildContext context, {
+    bool isDialog = false, 
     bool showTitleActions = true,
     DateTime? minTime,
     DateTime? maxTime,
@@ -197,6 +198,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
     this.locale,
     RouteSettings? settings,
     BasePickerModel? pickerModel,
+    this.isDialog = false, // New parameter for customization
   })  : this.pickerModel = pickerModel ?? DatePickerModel(),
         this.theme = theme ?? picker_theme.DatePickerTheme(),
         super(settings: settings);
@@ -208,6 +210,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
   final LocaleType? locale;
   final picker_theme.DatePickerTheme theme;
   final BasePickerModel pickerModel;
+   final bool isDialog; // New parameter for customization
 
   @override
   Duration get transitionDuration => const Duration(milliseconds: 200);
@@ -234,17 +237,27 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
   @override
   Widget buildPage(BuildContext context, Animation<double> animation,
       Animation<double> secondaryAnimation) {
-    Widget bottomSheet = MediaQuery.removePadding(
-      context: context,
-      removeTop: true,
-      child: _DatePickerComponent(
-        onChanged: onChanged,
-        locale: this.locale,
-        route: this,
-        pickerModel: pickerModel,
-      ),
+        
+    Widget pickerComponent = _DatePickerComponent(
+      onChanged: onChanged,
+      locale: this.locale,
+      route: this,
+      pickerModel: pickerModel,
     );
-    return InheritedTheme.captureAll(context, bottomSheet);
+
+    if (isDialog) {
+      return Dialog(
+        child: pickerComponent,
+      );
+    } else {
+      Widget bottomSheet = MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        child: pickerComponent,
+      );
+      return InheritedTheme.captureAll(context, bottomSheet);
+    }
+
   }
 }
 
