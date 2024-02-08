@@ -134,6 +134,7 @@ class DatePicker {
     DateCancelledCallback? onCancel,
     locale = LocaleType.en,
     DateTime? currentTime,
+    SingleChildLayoutDelegate? delegate,
     picker_theme.DatePickerTheme? theme,
   }) async {
     return await Navigator.push(
@@ -141,6 +142,7 @@ class DatePicker {
       _DatePickerRoute(
         showTitleActions: showTitleActions,
         isDialog: isDialog,
+        delegate: delegate,
         onChanged: onChanged,
         onConfirm: onConfirm,
         onCancel: onCancel,
@@ -200,6 +202,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
     RouteSettings? settings,
     BasePickerModel? pickerModel,
     this.isDialog = false, // New parameter for customization
+    this.delegate,
   })  : this.pickerModel = pickerModel ?? DatePickerModel(),
         this.theme = theme ?? picker_theme.DatePickerTheme(),
         super(settings: settings);
@@ -211,7 +214,8 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
   final LocaleType? locale;
   final picker_theme.DatePickerTheme theme;
   final BasePickerModel pickerModel;
-   final bool isDialog; // New parameter for customization
+  final bool isDialog; // New parameter for customization
+  final SingleChildLayoutDelegate? delegate;
 
   @override
   Duration get transitionDuration => const Duration(milliseconds: 200);
@@ -244,6 +248,7 @@ class _DatePickerRoute<T> extends PopupRoute<T> {
       locale: this.locale,
       route: this,
       pickerModel: pickerModel,
+      delegate: delegate,
     );
 
     if (isDialog) {
@@ -269,6 +274,7 @@ class _DatePickerComponent extends StatefulWidget {
     required this.pickerModel,
     this.onChanged,
     this.locale,
+    this.delegate,
   }) : super(key: key);
 
   final DateChangedCallback? onChanged;
@@ -278,6 +284,8 @@ class _DatePickerComponent extends StatefulWidget {
   final LocaleType? locale;
 
   final BasePickerModel pickerModel;
+
+  final SingleChildLayoutDelegate? delegate;
 
   @override
   State<StatefulWidget> createState() {
@@ -316,7 +324,7 @@ class _DatePickerState extends State<_DatePickerComponent> {
           final double bottomPadding = MediaQuery.of(context).padding.bottom;
           return ClipRect(
             child: CustomSingleChildLayout(
-              delegate: _BottomPickerLayout(
+              delegate: widget.delegate ?? _BottomPickerLayout(
                 widget.route.animation!.value,
                 theme,
                 showTitleActions: widget.route.showTitleActions!,
